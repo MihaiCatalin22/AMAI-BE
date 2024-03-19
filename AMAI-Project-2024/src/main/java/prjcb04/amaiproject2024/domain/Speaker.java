@@ -2,7 +2,6 @@ package prjcb04.amaiproject2024.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.Column;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import java.util.Set;
 import jakarta.persistence.OneToMany;
