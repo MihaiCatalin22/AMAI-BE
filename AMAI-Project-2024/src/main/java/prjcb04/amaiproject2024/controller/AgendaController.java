@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/agenda")
+@RequestMapping("/agendas")
 public class AgendaController {
 
     private final AgendaService agendaService;

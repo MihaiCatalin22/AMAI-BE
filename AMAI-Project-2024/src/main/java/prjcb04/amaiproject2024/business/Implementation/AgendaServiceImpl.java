@@ -21,7 +21,7 @@ public class AgendaServiceImpl implements AgendaService {
     @Override
     public List<Event> getUpcomingEvents(LocalDateTime now) {
         return eventRepository.findAll().stream()
-                .filter(event -> event.getDateTime().isAfter(now))
+                .filter(event -> event.getDate().isAfter(now))
                 .collect(Collectors.toList());
 
     }
@@ -29,7 +29,7 @@ public class AgendaServiceImpl implements AgendaService {
     @Override
     public List<Event> getPastEvents(LocalDateTime now) {
         return eventRepository.findAll().stream()
-                .filter(event -> event.getDateTime().isBefore(now))
+                .filter(event -> event.getDate().isBefore(now))
                 .collect(Collectors.toList());
     }
 }
