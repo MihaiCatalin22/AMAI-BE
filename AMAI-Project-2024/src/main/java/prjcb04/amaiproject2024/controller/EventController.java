@@ -53,4 +53,12 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<Event>> searchEventsByTopic(String topic) {
+        return ResponseEntity.ok(eventService.searchEventsByTopic(topic));
+    }
+
+
+
+
 }
