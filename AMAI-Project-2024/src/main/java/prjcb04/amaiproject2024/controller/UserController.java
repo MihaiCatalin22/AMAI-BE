@@ -1,15 +1,20 @@
 package prjcb04.amaiproject2024.controller;
 
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prjcb04.amaiproject2024.business.UserService;
+import prjcb04.amaiproject2024.business.dto.RegisterRequest;
 import prjcb04.amaiproject2024.domain.User;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
@@ -57,4 +62,26 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // login, register and email verification
+    @GetMapping("/verify/{code}")
+    public String verifyUser(@PathVariable("code") String code) {
+        if (userService.verify(code)) {
+            return "verify_success";
+        } else {
+            return "verify_fail";
+        }
+    }
+    @PostMapping("/register")
+    public String processRegister(@RequestBody RegisterRequest request)
+            throws UnsupportedEncodingException, MessagingException {
+        userService.register(request.getUser(), request.getUrl());
+        return "register_success";
+    }
+//    private String getSiteURL(HttpServletRequest request) {
+//        String siteURL = request.getRequestURL().toString();
+//        return siteURL.replace(request.getServletPath(), "");
+//    }
+
+    //----------------------------------------------------------
 }

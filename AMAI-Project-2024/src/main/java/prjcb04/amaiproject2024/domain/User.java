@@ -25,6 +25,11 @@ public class User {
 
     private String fullName;
 
+    @Column(name = "verification_code", length = 10)
+    private String verificationCode;
+
+    private boolean enabled;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)

@@ -11,4 +11,8 @@ public interface UserService {
     List<User> getAllUsers();
     User updateUser(Long id, User user);
     void deleteUser(Long id);
+
+    void register(User user, String siteURL);
+    void sendVerificationEmail(User user, String siteURL);
+    boolean verify(String verificationCode);
 }
