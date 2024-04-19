@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import prjcb04.amaiproject2024.config.dateFormaters.LocalDateTimeDeserializer;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,8 @@ public class Event {
     @ElementCollection
     private List<String> speakers;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;
 }

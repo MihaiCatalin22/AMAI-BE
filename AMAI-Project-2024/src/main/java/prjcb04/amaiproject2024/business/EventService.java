@@ -1,6 +1,9 @@
 package prjcb04.amaiproject2024.business;
 
 import prjcb04.amaiproject2024.domain.Event;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,5 +15,7 @@ public interface EventService {
     void deleteEvent(Long id);
 
     List<Event> searchEventsByTopic(String topic);
+    List<Event> getEventsByDate(LocalDate date);
 
+    List<LocalDateTime> getAvailableSlots(LocalDate date);
 }

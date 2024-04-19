@@ -5,8 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prjcb04.amaiproject2024.business.EventService;
 import prjcb04.amaiproject2024.domain.Event;
-
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/events")
@@ -57,8 +62,13 @@ public class EventController {
     public ResponseEntity<List<Event>> searchEventsByTopic(String topic) {
         return ResponseEntity.ok(eventService.searchEventsByTopic(topic));
     }
+    @GetMapping("/availableSlots")
+    public ResponseEntity<List<LocalDateTime>> getAvailableSlots(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        if (date.getDayOfWeek() != DayOfWeek.THURSDAY) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
 
-
-
-
+        List<LocalDateTime> availableSlots = eventService.getAvailableSlots(date);
+        return ResponseEntity.ok(availableSlots);
+    }
 }
