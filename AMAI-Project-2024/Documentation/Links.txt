@@ -1,0 +1,7 @@
+Links:
+
+Git backend: https://git.fhict.nl/I502268/s3-group-project
+
+Git front-end: https://git.fhict.nl/I502268/s3-group-project-frontend
+
+Jira: https://lodkonosec.atlassian.net/jira/software/projects/SCRUM/boards/1
