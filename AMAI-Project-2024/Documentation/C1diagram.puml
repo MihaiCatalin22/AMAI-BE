@@ -1,0 +1,14 @@
+@startuml AMAI-SystemContext
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+left to right direction
+
+Person(admin, "Administrator", "An administrator who manages the AMAI platform and its content.")
+Person(speaker, "Speaker", "A speaker who presents at events and uses the platform to manage their presentations.")
+Person(attendee, "Attendee", "A user who attends events and uses the platform to register and view event information.")
+System(amai, "AMAI", "A community platform for AI enthusiasts to engage in discussions, share insights, and participate in AI-related meetups.")
+
+Rel(admin, amai, "Manages events and user roles.", "HTTPS")
+Rel(speaker, amai, "Submits and manages their presentations.", "HTTPS")
+Rel(attendee, amai, "Registers for and views events.", "HTTPS")
+@enduml

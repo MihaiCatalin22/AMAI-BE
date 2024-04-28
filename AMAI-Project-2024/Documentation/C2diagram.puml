@@ -1,0 +1,24 @@
+@startuml AMAI-Container
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+left to right direction
+
+System_Boundary(amai, "AMAI") {
+    Container(webApp, "Web Application", "React, JavaScript", "Allows users to interact with the AMAI platform, register for events, and view presentations.")
+    Container(apiService, "API Service", "Spring Boot, Java", "Handles business logic, event management, speaker coordination, and data processing.")
+    ContainerDb(database, "Database", "MySQL", "Stores user profiles, event details, speaker data, and presentation information.")
+    Container(emailService, "Email Service", "SMTP, External", "Manages sending notifications and confirmations to users.")
+}
+
+Person(admin, "Administrator", "An administrator who manages the AMAI platform.")
+Person(speaker, "Speaker", "A speaker who presents at events.")
+Person(attendee, "Attendee", "A user who attends events.")
+
+Rel(admin, webApp, "Manages platform through")
+Rel(speaker, webApp, "Submits and manages presentations through")
+Rel(attendee, webApp, "Registers and views events through")
+Rel(webApp, apiService, "Sends API requests to")
+Rel(apiService, database, "Reads from and writes to")
+Rel(apiService, emailService, "Sends emails via")
+
+@enduml
