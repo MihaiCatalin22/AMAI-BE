@@ -1,6 +1,7 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.Presentation;
 import prjcb04.amaiproject2024.persistence.EventRepository;
 import prjcb04.amaiproject2024.business.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,14 @@ public class EventServiceImpl implements EventService {
                 event.getDate().isEqual(slotStart) ||
                         (event.getDate().isAfter(slotStart) && event.getDate().isBefore(slotEnd))
         );
+    }
+
+    @Override
+    public void attachFileToEvent(Long eventId, String fileName) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
+        event.setFileName(fileName);
+        eventRepository.save(event);
     }
 }
 

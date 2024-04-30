@@ -33,4 +33,7 @@ public class Event {
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;
+
+    @Column(name = "file_name")
+    private String fileName;
 }
