@@ -1,15 +1,11 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import prjcb04.amaiproject2024.domain.Presentation;
-import prjcb04.amaiproject2024.persistence.PresentationRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;

@@ -3,7 +3,7 @@
 
 title Component Diagram for AMAI Platform Backend Service
 
-Container(apiService, "AMAI API Service", "Spring Boot", "Handles business logic, event management, speaker coordination, data processing, and agenda settings.")
+Container(webApp, "AMAI API Service", "Spring Boot", "Handles business logic, event management, speaker coordination, data processing, and agenda settings.")
 
 Container_Boundary(api, "AMAI Backend Service") {
     Component(userController, "User Controller", "Spring MVC Rest Controller", "RESTful API endpoints for user operations.")
@@ -11,12 +11,14 @@ Container_Boundary(api, "AMAI Backend Service") {
     Component(speakerController, "Speaker Controller", "Spring MVC Rest Controller", "RESTful API endpoints for speaker operations.")
     Component(presentationController, "Presentation Controller", "Spring MVC Rest Controller", "RESTful API endpoints for presentation operations.")
     Component(agendaController, "Agenda Controller", "Spring MVC Rest Controller", "RESTful API endpoints for agenda management.")
+    Component(fileStorageController, "File Storage Controller", "Spring MVC Rest Controller", "Handles file uploads and retrievals.")
 
     Component(userService, "User Service", "Spring Service", "Manages user information and actions.")
     Component(eventService, "Event Service", "Spring Service", "Handles event-related functionality.")
     Component(speakerService, "Speaker Service", "Spring Service", "Manages speaker information and engagements.")
     Component(presentationService, "Presentation Service", "Spring Service", "Handles presentation scheduling and details.")
     Component(agendaService, "Agenda Service", "Spring Service", "Manages and schedules event agendas.")
+    Component(fileStorageService, "File Storage Service", "Spring Service", "Manages file storage operations.")
 
     ComponentDb(userRepository, "User Repository", "JPA Repository", "Provides CRUD functionality for user data.")
     ComponentDb(eventRepository, "Event Repository", "JPA Repository", "Provides CRUD functionality for event data.")
@@ -29,6 +31,7 @@ Container_Boundary(api, "AMAI Backend Service") {
     Rel(speakerController, speakerService, "Uses")
     Rel(presentationController, presentationService, "Uses")
     Rel(agendaController, agendaService, "Uses")
+    Rel(fileStorageController, fileStorageService, "Uses")
 
     Rel(userService, userRepository, "Reads from and writes to")
     Rel(eventService, eventRepository, "Reads from and writes to")
@@ -44,6 +47,7 @@ Rel(webApp, eventController, "Makes API calls to")
 Rel(webApp, speakerController, "Makes API calls to")
 Rel(webApp, presentationController, "Makes API calls to")
 Rel(webApp, agendaController, "Makes API calls to")
+Rel(webApp, fileStorageController, "Makes API calls to")
 
 Rel(userRepository, database, "Reads from and writes to")
 Rel(eventRepository, database, "Reads from and writes to")
