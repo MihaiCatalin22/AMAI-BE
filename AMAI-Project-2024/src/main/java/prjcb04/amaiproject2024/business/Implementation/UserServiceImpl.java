@@ -96,13 +96,21 @@ public class UserServiceImpl implements UserService {
     //mail actions, registration and login
 
     @Override
-    public void register(User user, String siteURL) {
-        //String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPasswordHash(user.getPasswordHash());
+    public void register(UserDTO userDTO, String siteURL) {
+        if (userDTO.getPassword() == null) {
+            throw new IllegalArgumentException("Password must not be null");
+        }
+        User user = userMapper.toEntity(userDTO);
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+        user.setPasswordHash(encodedPassword);
 
         String randomCode = stringGeneration();
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
+
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(Collections.singletonList(Role.USER));
+        }
 
         userRepository.save(user);
 
@@ -130,16 +138,13 @@ public class UserServiceImpl implements UserService {
             helper.setTo(toAddress);
             helper.setSubject(subject);
             content = content.replace("[[name]]", user.getFullName());
-            siteURL =siteURL.replace("register","verify");
-            String verifyURL = siteURL + "?code=" + user.getVerificationCode();
-
+            String verifyURL = siteURL + "/users/verify/" + user.getVerificationCode();
             content = content.replace("[[URL]]", verifyURL);
             helper.setText(content, true);
             mailSender.send(message);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
-
         }
     }
 
@@ -153,10 +158,8 @@ public class UserServiceImpl implements UserService {
             user.setVerificationCode(null);
             user.setEnabled(true);
             userRepository.save(user);
-
             return true;
         }
-
     }
 
     //private support methods

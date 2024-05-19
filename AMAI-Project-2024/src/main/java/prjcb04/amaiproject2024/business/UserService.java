@@ -13,7 +13,7 @@ public interface UserService {
     UserDTO updateUser(Long id, UserDTO userDTO);
     void deleteUser(Long id);
 
-    void register(User user, String siteURL);
+    void register(UserDTO userDTO, String siteURL);
     void sendVerificationEmail(User user, String siteURL);
     boolean verify(String verificationCode);
     Optional<UserDTO> login (UserDTO userDTO);

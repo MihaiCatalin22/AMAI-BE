@@ -22,7 +22,6 @@ public interface UserMapper {
         dto.setRole(roles);
     }
 
-
     @Mapping(target = "passwordHash", ignore = true)
     User toEntity(UserDTO userDTO);
 

@@ -1,6 +1,7 @@
 package prjcb04.amaiproject2024.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import prjcb04.amaiproject2024.domain.User;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -86,9 +88,11 @@ public class UserController {
         }
     }
     @PostMapping("/register")
-    public String processRegister(@RequestBody RegisterRequest request)
-            throws UnsupportedEncodingException, MessagingException {
-        userService.register(request.getUser(), request.getUrl());
+    public String processRegister(@RequestBody Map<String, Object> request) {
+        ObjectMapper mapper = new ObjectMapper();
+        UserDTO userDTO = mapper.convertValue(request.get("user"), UserDTO.class);
+        String siteURL = (String) request.get("siteURL");
+        userService.register(userDTO, siteURL);
         return "register_success";
     }
 //    private String getSiteURL(HttpServletRequest request) {

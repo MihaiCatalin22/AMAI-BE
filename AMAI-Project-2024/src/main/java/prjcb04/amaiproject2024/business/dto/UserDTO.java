@@ -20,6 +20,8 @@ public class UserDTO {
     private String email;
 
     private String username;
+    private String fullName;
     private List<String> role;
     private String jwt;
+    private String siteURL;
 }
