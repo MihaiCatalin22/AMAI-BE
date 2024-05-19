@@ -14,17 +14,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-// @EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF as it is not needed for stateless APIs
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .anyRequest().permitAll())  // Allow all requests without any security constraints
+                        .requestMatchers("/users/**", "/users/login", "/users/register", "/users/verify/**").permitAll()
+                        .requestMatchers("/files/download/**").permitAll()
+                        .requestMatchers("/files/upload/**").authenticated()
+                        .requestMatchers("/agendas/**").authenticated()
+                        .requestMatchers("/events/**").authenticated()
+                        .requestMatchers("/presentations/**").authenticated()
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // No session will be created
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

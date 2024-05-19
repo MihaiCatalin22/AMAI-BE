@@ -16,7 +16,9 @@ public class RestCorsConfiguration {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173", "http://localhost:4173", "http://localhost:5174")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+
             }
         };
     }

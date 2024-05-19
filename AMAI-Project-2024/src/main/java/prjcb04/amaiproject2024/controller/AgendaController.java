@@ -1,5 +1,6 @@
 package prjcb04.amaiproject2024.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import prjcb04.amaiproject2024.domain.Agenda;
 import prjcb04.amaiproject2024.domain.Event;
 import prjcb04.amaiproject2024.business.AgendaService;
@@ -22,6 +23,7 @@ public class AgendaController {
     }
 
     @GetMapping("/upcoming")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Event>> getUpcomingEvents() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> upcomingEvents = agendaService.getUpcomingEvents(now);
@@ -29,6 +31,7 @@ public class AgendaController {
     }
 
     @GetMapping("/past")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Event>> getPastEvents() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> pastEvents = agendaService.getPastEvents(now);

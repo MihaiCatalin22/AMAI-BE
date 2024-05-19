@@ -1,5 +1,6 @@
 package prjcb04.amaiproject2024.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import prjcb04.amaiproject2024.domain.Presentation;
 import prjcb04.amaiproject2024.business.PresentationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +20,21 @@ public class PresentationController {
     }
 
     @PostMapping
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SPEAKER')")
     public ResponseEntity<Presentation> createPresentation(@RequestBody Presentation presentation) {
         Presentation newPresentation = presentationService.createPresentation(presentation);
         return ResponseEntity.ok(newPresentation);
     }
 
     @GetMapping
+    //@PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Presentation>> getAllPresentations() {
         List<Presentation> presentations = presentationService.getAllPresentations();
         return ResponseEntity.ok(presentations);
     }
 
     @GetMapping("/{id}")
+    //@PreAuthorize("isAuthenticated()")
     public ResponseEntity<Presentation> getPresentationById(@PathVariable Long id) {
         return presentationService.getPresentationById(id)
                 .map(ResponseEntity::ok)
