@@ -21,7 +21,7 @@ public class FileStorageService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    public String storeFile(MultipartFile file) throws IOException {
+    public String storeFile(MultipartFile file, Long eventId) throws IOException {
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
         Path targetLocation = Paths.get(uploadDir).resolve(fileName);
@@ -30,7 +30,12 @@ public class FileStorageService {
 
         return fileName;
     }
+    public String replaceFile(MultipartFile file, Long eventId, String oldFileName) throws IOException {
+        Path oldFilePath = Paths.get(uploadDir).resolve(oldFileName);
+        Files.deleteIfExists(oldFilePath);
 
+        return storeFile(file, eventId);
+    }
     public Resource loadFileAsResource(String fileName) {
         try {
             Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
