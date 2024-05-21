@@ -19,4 +19,5 @@ public interface EventService {
 
     List<LocalDateTime> getAvailableSlots(LocalDate date);
     void attachFileToEvent(Long eventId, String fileName);
+    void updateEventPresentationFile(Long eventId, String fileName);
 }

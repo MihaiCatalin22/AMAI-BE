@@ -105,5 +105,12 @@ public class EventServiceImpl implements EventService {
         event.setFileName(fileName);
         eventRepository.save(event);
     }
+    @Override
+    public void updateEventPresentationFile(Long eventId, String fileName) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
+        event.setFileName(fileName);
+        eventRepository.save(event);
+    }
 }
 

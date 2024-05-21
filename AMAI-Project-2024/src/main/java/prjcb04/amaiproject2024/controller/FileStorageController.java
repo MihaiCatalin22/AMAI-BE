@@ -46,13 +46,21 @@ public class FileStorageController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found with id: " + eventId);
             }
 
-            String fileName = fileStorageService.storeFile(file);
-            System.out.println("File stored with name: " + fileName);
+            Event event = eventOptional.get();
+            String oldFileName = event.getFileName();
+            String fileName;
 
-            eventService.attachFileToEvent(eventId, fileName);
-            System.out.println("File attached to event with ID: " + eventId);
+            if (oldFileName == null || oldFileName.isEmpty()) {
+                fileName = fileStorageService.storeFile(file, eventId);
+            } else {
+                fileName = fileStorageService.replaceFile(file, eventId, oldFileName);
+            }
 
-            return ResponseEntity.ok().body("File uploaded successfully: " + fileName);
+            eventService.updateEventPresentationFile(eventId, fileName);
+            Event updatedEvent = eventService.getEventById(eventId)
+                    .orElseThrow(() -> new RuntimeException("Event not found after updating presentation file"));
+
+            return ResponseEntity.ok(updatedEvent);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error during file upload: " + e.getMessage());
