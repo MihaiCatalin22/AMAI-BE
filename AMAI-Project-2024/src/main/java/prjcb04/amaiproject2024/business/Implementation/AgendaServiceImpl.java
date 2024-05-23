@@ -6,6 +6,7 @@ import prjcb04.amaiproject2024.persistence.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class AgendaServiceImpl implements AgendaService {
     public List<Event> getUpcomingEvents(LocalDateTime now) {
         return eventRepository.findAll().stream()
                 .filter(event -> event.getDate().isAfter(now))
+                .sorted(Comparator.comparing(Event::getDate))
                 .collect(Collectors.toList());
 
     }
