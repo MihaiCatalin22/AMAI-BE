@@ -36,4 +36,6 @@ public class Event {
 
     @Column(name = "file_name")
     private String fileName;
+
+    private int duration;
 }

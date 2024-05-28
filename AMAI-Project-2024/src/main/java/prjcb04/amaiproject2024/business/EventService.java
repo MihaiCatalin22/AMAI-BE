@@ -17,7 +17,8 @@ public interface EventService {
     List<Event> searchEventsByTopic(String topic);
     List<Event> getEventsByDate(LocalDate date);
 
-    List<LocalDateTime> getAvailableSlots(LocalDate date);
+    List<LocalDateTime> getAvailableSlots(LocalDate date, int duration);
+
     void attachFileToEvent(Long eventId, String fileName);
     void updateEventPresentationFile(Long eventId, String fileName);
 }

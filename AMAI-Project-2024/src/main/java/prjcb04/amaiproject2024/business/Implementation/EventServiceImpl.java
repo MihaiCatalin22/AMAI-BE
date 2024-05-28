@@ -1,7 +1,6 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
 import prjcb04.amaiproject2024.domain.Event;
-import prjcb04.amaiproject2024.domain.Presentation;
 import prjcb04.amaiproject2024.persistence.EventRepository;
 import prjcb04.amaiproject2024.business.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +43,7 @@ public class EventServiceImpl implements EventService {
             existingEvent.setTopic(eventDetails.getTopic());
             existingEvent.setDescription(eventDetails.getDescription());
             existingEvent.setDate(eventDetails.getDate());
+            existingEvent.setDuration(eventDetails.getDuration());
             return eventRepository.save(existingEvent);
         }).orElseThrow(() -> new IllegalArgumentException("Event not found with id: " + id));
     }
@@ -67,15 +67,35 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<LocalDateTime> getAvailableSlots(LocalDate date) {
+    public List<LocalDateTime> getAvailableSlots(LocalDate date, int duration) {
         List<LocalDateTime> availableSlots = new ArrayList<>();
         List<Event> events = getEventsByDate(date);
 
-        // Define both half-hour slots
-        LocalDateTime firstSlotStart = date.atTime(16, 0);
-        LocalDateTime firstSlotEnd = date.atTime(16, 30);
-        LocalDateTime secondSlotStart = date.atTime(16, 30);
-        LocalDateTime secondSlotEnd = date.atTime(17, 0);
+        LocalDateTime slotStart = date.atTime(16, 0);
+        LocalDateTime slotEnd = date.atTime(17, 0);
+
+        LocalDateTime firstSlotStart;
+        LocalDateTime firstSlotEnd;
+        LocalDateTime secondSlotStart;
+        LocalDateTime secondSlotEnd;
+
+        // Check the selected duration and adjust time slots accordingly
+        if (duration == 10) {
+            firstSlotStart = date.atTime(16, 0);
+            firstSlotEnd = date.atTime(16, 10);
+            secondSlotStart = date.atTime(16, 10);
+            secondSlotEnd = date.atTime(16, 20);
+        } else if (duration == 20) {
+            firstSlotStart = date.atTime(16, 0);
+            firstSlotEnd = date.atTime(16, 20);
+            secondSlotStart = date.atTime(16, 20);
+            secondSlotEnd = date.atTime(16, 40);
+        } else {
+            firstSlotStart = date.atTime(16, 0);
+            firstSlotEnd = date.atTime(16, 30);
+            secondSlotStart = date.atTime(16, 30);
+            secondSlotEnd = date.atTime(17, 0);
+        }
 
         // Check if slots are available
         boolean firstSlotAvailable = isSlotAvailable(events, firstSlotStart, firstSlotEnd);
@@ -94,7 +114,8 @@ public class EventServiceImpl implements EventService {
     private boolean isSlotAvailable(List<Event> events, LocalDateTime slotStart, LocalDateTime slotEnd) {
         return events.stream().noneMatch(event ->
                 event.getDate().isEqual(slotStart) ||
-                        (event.getDate().isAfter(slotStart) && event.getDate().isBefore(slotEnd))
+                        (event.getDate().isAfter(slotStart) &&
+                                event.getDate().isBefore(slotEnd))
         );
     }
 

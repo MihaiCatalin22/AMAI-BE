@@ -70,12 +70,14 @@ public class EventController {
         return ResponseEntity.ok(eventService.searchEventsByTopic(topic));
     }
     @GetMapping("/availableSlots")
-    public ResponseEntity<List<LocalDateTime>> getAvailableSlots(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public ResponseEntity<List<LocalDateTime>> getAvailableSlots(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam int duration) {
         if (date.getDayOfWeek() != DayOfWeek.TUESDAY) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List<LocalDateTime> availableSlots = eventService.getAvailableSlots(date);
+        List<LocalDateTime> availableSlots = eventService.getAvailableSlots(date, duration);
         return ResponseEntity.ok(availableSlots);
     }
 }
