@@ -12,7 +12,6 @@ import java.util.*;
 
 @Service
 public class AvailableTuesdays {
-    //ALL THE AVAILABLE TUESDAYS ABIDING BY THE RULES OF AMAI
     int startYear = 2023;
     int endYear = 2024;
     public List<LocalDate> firstEducationalPeriod(){

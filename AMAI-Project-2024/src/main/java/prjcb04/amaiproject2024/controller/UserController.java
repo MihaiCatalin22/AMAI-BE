@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import prjcb04.amaiproject2024.business.UserService;
 import prjcb04.amaiproject2024.business.dto.RegisterRequest;
+import prjcb04.amaiproject2024.business.dto.SubscribeToCalendarRequest;
 import prjcb04.amaiproject2024.business.dto.UserDTO;
 import prjcb04.amaiproject2024.domain.User;
 
@@ -44,10 +45,10 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+
+
     }
 
     @PutMapping("/{id}")
@@ -56,6 +57,17 @@ public class UserController {
         try {
             UserDTO updatedUser = userService.updateUser(id, userDTO);
             return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PutMapping("/{id}/calendar/{isSubscribed}")
+    @PreAuthorize("#id == principal.id")
+    public ResponseEntity<Void> invitationsSubscription(@PathVariable Long id,@PathVariable Boolean isSubscribed) {
+        SubscribeToCalendarRequest request = SubscribeToCalendarRequest.builder().userId(id).subscribes(isSubscribed).build();
+        try {
+            userService.subToCalendarToggle(request);
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

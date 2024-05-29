@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class EmailSender {
-@Autowired
+    @Autowired
     JavaMailSender mailSender;
 
     UserRepository userRepository;
@@ -32,7 +32,7 @@ public class EmailSender {
     private final String subject = "Automatic invitations email";
 
     public void sendInvitesYearly() {
-        List<String> emailAddresses = userRepository.findAll().stream().map(User::getEmail).toList();
+        List<String> emailAddresses = userRepository.findByCalendarSubscribedTrue().stream().map(User::getEmail).toList();
         var dates = availableTuesdays.generate();
 
         String emailAddressesString = String.join(";", emailAddresses);
@@ -55,8 +55,9 @@ public class EmailSender {
             throw new RuntimeException(e);
         }
     }
+
     public void sendInvitesFirstPeriod() {
-        List<String> emailAddresses = userRepository.findAll().stream().map(User::getEmail).toList();
+        List<String> emailAddresses = userRepository.findByCalendarSubscribedTrue().stream().map(User::getEmail).toList();
         var dates = availableTuesdays.firstEducationalPeriod();
 
         String emailAddressesString = String.join(";", emailAddresses);
@@ -73,14 +74,15 @@ public class EmailSender {
             helper.setSubject(subject);
 
             helper.setText(content, true);
-              mailSender.send(message);
+            mailSender.send(message);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     public void sendInvitesSecondPeriod() {
-        List<String> emailAddresses = userRepository.findAll().stream().map(User::getEmail).toList();
+        List<String> emailAddresses = userRepository.findByCalendarSubscribedTrue().stream().map(User::getEmail).toList();
         var dates = availableTuesdays.secondEducationalPeriod();
 
         String emailAddressesString = String.join(";", emailAddresses);
@@ -97,7 +99,35 @@ public class EmailSender {
             helper.setSubject(subject);
 
             helper.setText(content, true);
-              mailSender.send(message);
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void sendVerificationEmail(User user, String siteURL) {
+        String toAddress = user.getEmail();
+        String fromAddress = "vrachkapoznavachka@gmail.com";
+        String senderName = "AMAI";
+        String subject = "Please verify your registration";
+        String content = "Dear [[name]],<br>"
+                + "Please click the link below to verify your registration:<br>"
+                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
+                + "Thank you,<br>"
+                + "AMAI.";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        try {
+            helper.setFrom(fromAddress, senderName);
+            helper.setTo(toAddress);
+            helper.setSubject(subject);
+            content = content.replace("[[name]]", user.getFullName());
+            String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
+            content = content.replace("[[URL]]", verifyURL);
+            helper.setText(content, true);
+            mailSender.send(message);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
