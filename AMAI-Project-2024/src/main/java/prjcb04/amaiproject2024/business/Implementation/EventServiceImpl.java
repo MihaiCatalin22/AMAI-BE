@@ -18,7 +18,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
 
     @Autowired
-    public EventServiceImpl(EventRepository eventRepository) {
+    public EventServiceImpl(EventRepository eventRepository,EmailSender emailSender) {
         this.eventRepository = eventRepository;
     }
 
@@ -107,8 +107,8 @@ public class EventServiceImpl implements EventService {
         if (secondSlotAvailable) {
             availableSlots.add(secondSlotStart);
         }
-
         return availableSlots;
+
     }
 
     private boolean isSlotAvailable(List<Event> events, LocalDateTime slotStart, LocalDateTime slotEnd) {
@@ -126,6 +126,7 @@ public class EventServiceImpl implements EventService {
         event.setFileName(fileName);
         eventRepository.save(event);
     }
+
     @Override
     public void updateEventPresentationFile(Long eventId, String fileName) {
         Event event = eventRepository.findById(eventId)
