@@ -2,6 +2,7 @@ package prjcb04.amaiproject2024.business.Implementation;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import prjcb04.amaiproject2024.domain.AvailableTimeslots;
 import prjcb04.amaiproject2024.domain.TimeSlot;
 
 import java.time.DayOfWeek;
@@ -14,18 +15,21 @@ import java.util.*;
 public class AvailableTuesdays {
     int startYear = 2023;
     int endYear = 2024;
-    public List<LocalDate> firstEducationalPeriod(){
+
+    public List<LocalDate> firstEducationalPeriod() {
         List<LocalDate> allTuesdays = generate();
-        LocalDate startDate = LocalDate.of(startYear,Month.SEPTEMBER,1);
-        LocalDate endDate = LocalDate.of(endYear,Month.FEBRUARY,10);
-        return rangeBetween(allTuesdays,startDate,endDate);
+        LocalDate startDate = LocalDate.of(startYear, Month.SEPTEMBER, 1);
+        LocalDate endDate = LocalDate.of(endYear, Month.FEBRUARY, 10);
+        return rangeBetween(allTuesdays, startDate, endDate);
     }
-    public List<LocalDate> secondEducationalPeriod(){
+
+    public List<LocalDate> secondEducationalPeriod() {
         List<LocalDate> allTuesdays = generate();
-        LocalDate startDate = LocalDate.of(endYear,Month.FEBRUARY,19);
-        LocalDate endDate = LocalDate.of(endYear,Month.JUNE,29);
-        return rangeBetween(allTuesdays,startDate,endDate);
+        LocalDate startDate = LocalDate.of(endYear, Month.FEBRUARY, 19);
+        LocalDate endDate = LocalDate.of(endYear, Month.JUNE, 29);
+        return rangeBetween(allTuesdays, startDate, endDate);
     }
+
     public List<LocalDate> generate() {
 
 
@@ -63,7 +67,6 @@ public class AvailableTuesdays {
         addFirstWeekAndLastTwoWeeks(holidays, LocalDate.of(endYear, Month.FEBRUARY, 19), LocalDate.of(endYear + 1, Month.JUNE, 29)); // Educational period 2
 
         List<LocalDate> tuesdays = getFilteredTuesdays(startYear, endYear, holidays);
-        //Map<LocalDate, List<TimeSlot>> tuesdayTimeSlots = generateTimeSlotsForTuesdays(tuesdays);
         return tuesdays;
     }
 
@@ -74,14 +77,15 @@ public class AvailableTuesdays {
             date = date.plusDays(1);
         }
     }
+
     private static List<LocalDate> rangeBetween(List<LocalDate> tuesdays, LocalDate start, LocalDate end) {
         List<LocalDate> inThePeriod = new ArrayList<>();
-        for (LocalDate tuesday:tuesdays){
-            if (!tuesday.isBefore(start)&&!tuesday.isAfter(end)){
+        for (LocalDate tuesday : tuesdays) {
+            if (!tuesday.isBefore(start) && !tuesday.isAfter(end)) {
                 inThePeriod.add(tuesday);
             }
         }
-       return inThePeriod;
+        return inThePeriod;
     }
 
     private static void addFirstWeekAndLastTwoWeeks(Set<LocalDate> holidays, LocalDate start, LocalDate end) {
@@ -133,8 +137,9 @@ public class AvailableTuesdays {
         return true;
     }
 
-    private static Map<LocalDate, List<TimeSlot>> generateTimeSlotsForTuesdays(List<LocalDate> tuesdays) {
-        Map<LocalDate, List<TimeSlot>> tuesdayTimeSlots = new HashMap<>();
+    public static List<AvailableTimeslots> generateTimeSlotsForTuesdays(List<LocalDate> tuesdays) {
+        List<AvailableTimeslots> tuesdayTimeSlots = new ArrayList<>() {
+        };
         for (LocalDate tuesday : tuesdays) {
             List<TimeSlot> slots = new ArrayList<>();
             LocalTime startTime = LocalTime.of(16, 0);
@@ -144,7 +149,15 @@ public class AvailableTuesdays {
                 startTime = startTime.plusMinutes(10);
                 endTime = endTime.plusMinutes(10);
             }
-            tuesdayTimeSlots.put(tuesday, slots);
+            for (TimeSlot slot : slots) {
+                AvailableTimeslots tuesdaySlot = AvailableTimeslots.builder()
+                        .date(tuesday)
+                        .start(slot.getStartTime())
+                        .end(slot.getEndTime())
+                        .isTaken(false)
+                        .build();
+                tuesdayTimeSlots.add(tuesdaySlot);
+            }
         }
         return tuesdayTimeSlots;
     }
