@@ -18,7 +18,8 @@ public class UserDTO {
     @Email(message = "Email should be valid.")
     @NotBlank(message = "Email must not be empty.")
     private String email;
-
+    private Boolean isSubscribed;
+    private Boolean isEnabled;
     private String username;
     private String fullName;
     private List<String> role;

@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import prjcb04.amaiproject2024.business.UserService;
+import prjcb04.amaiproject2024.business.dto.SubscribeToCalendarRequest;
 import prjcb04.amaiproject2024.config.security.token.JwtUtil;
 import prjcb04.amaiproject2024.domain.Role;
 import prjcb04.amaiproject2024.persistence.UserRepository;
@@ -20,6 +21,7 @@ import jakarta.transaction.Transactional;
 import prjcb04.amaiproject2024.persistence.mapper.UserMapper;
 
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidParameterException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -32,15 +34,15 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    @Autowired
-    private JavaMailSender mailSender;
+    private final EmailSender emailSender;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserMapper userMapper,EmailSender emailSender) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.emailSender = emailSender;
     }
 
     @Override
@@ -53,10 +55,8 @@ public class UserServiceImpl implements UserService {
         return buildUserDTOwithJwt(user);
     }
     @Override
-    public Optional<UserDTO> getUserById(Long id) {
-        return Optional.ofNullable(userRepository.findById(id)
-                .map(userMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id)));
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
     }
 
     @Override
@@ -92,7 +92,12 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
     }
-
+    @Override
+    public void subToCalendarToggle(SubscribeToCalendarRequest request){
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setCalendarSubscribed(request.getSubscribes());
+        userRepository.save(user);
+    }
     //mail actions, registration and login
 
     @Override
@@ -103,9 +108,11 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(userDTO);
         String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         user.setPasswordHash(encodedPassword);
-
-        String randomCode = stringGeneration();
-        user.setVerificationCode(randomCode);
+        if (userDTO.getEmail().contains("@abv.bg")){
+            String randomCode = stringGeneration();
+            user.setVerificationCode(randomCode);
+            emailSender.sendVerificationEmail(user, siteURL);
+        }
         user.setEnabled(false);
 
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
@@ -113,39 +120,6 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
-
-        sendVerificationEmail(user, siteURL);
-    }
-
-
-    @Override
-    public void sendVerificationEmail(User user, String siteURL) {
-        String toAddress = user.getEmail();
-        String fromAddress = "vrachkapoznavachka@gmail.com";
-        String senderName = "AMAI";
-        String subject = "Please verify your registration";
-        String content = "Dear [[name]],<br>"
-                + "Please click the link below to verify your registration:<br>"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
-                + "Thank you,<br>"
-                + "AMAI.";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        try {
-            helper.setFrom(fromAddress, senderName);
-            helper.setTo(toAddress);
-            helper.setSubject(subject);
-            content = content.replace("[[name]]", user.getFullName());
-            String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
-            content = content.replace("[[URL]]", verifyURL);
-            helper.setText(content, true);
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -156,6 +130,7 @@ public class UserServiceImpl implements UserService {
             return false;
         } else {
             user.setVerificationCode(null);
+            user.setRoles(Collections.singletonList(Role.SPEAKER));
             user.setEnabled(true);
             userRepository.save(user);
             return true;

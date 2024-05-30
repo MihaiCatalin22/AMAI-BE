@@ -53,7 +53,8 @@ public class QuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(jobTwoDetail())
                 .withIdentity("jobThreeTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("00 30 10 6 6 ? *"))
+                //.withSchedule(CronScheduleBuilder.cronSchedule("00 30 10 6 6 ? *"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 46 12 29 5 ? *"))
                 .build();
     }
 
