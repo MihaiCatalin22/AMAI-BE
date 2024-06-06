@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/users/**", "/users/login", "/users/register", "/users/verify/**").permitAll()
+                        .requestMatchers("/users/**", "/users/login", "/users/register", "/users/verify/*").permitAll()
                         .requestMatchers("/files/download/**").permitAll()
                         .requestMatchers("users/*/calendar/**").permitAll()
                         .requestMatchers("/files/upload/**").authenticated()

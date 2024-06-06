@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
             return false;
         } else {
             user.setVerificationCode(null);
-            user.setRoles(Collections.singletonList(Role.SPEAKER));
+            user.getRoles().add(Role.SPEAKER);
             user.setEnabled(true);
             userRepository.save(user);
             return true;

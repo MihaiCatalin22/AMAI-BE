@@ -92,7 +92,7 @@ public class UserController {
 
     // login, register and email verification
     @GetMapping("/verify/{code}")
-    public String verifyUser(@PathVariable("code") String code) {
+    public String verifyUser(@PathVariable String code) {
         if (userService.verify(code)) {
             return "verify_success";
         } else {
