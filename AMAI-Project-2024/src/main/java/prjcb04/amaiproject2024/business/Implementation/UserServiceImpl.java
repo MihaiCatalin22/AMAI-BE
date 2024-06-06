@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(userDTO);
         String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         user.setPasswordHash(encodedPassword);
-        if (userDTO.getEmail().contains("@abv.bg")){
+        if (userDTO.getEmail().contains("@fontys.nl")){
             String randomCode = stringGeneration();
             user.setVerificationCode(randomCode);
             emailSender.sendVerificationEmail(user, siteURL);
