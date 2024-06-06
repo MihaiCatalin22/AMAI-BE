@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/users/**", "/users/login", "/users/register", "/users/verify/**").permitAll()
                         .requestMatchers("/files/download/**").permitAll()
-                        .requestMatchers("users/**/calendar/**").permitAll()
+                        .requestMatchers("users/*/calendar/**").permitAll()
                         .requestMatchers("/files/upload/**").authenticated()
                         .requestMatchers("/agendas/**").authenticated()
                         .requestMatchers("/events/**").authenticated()
