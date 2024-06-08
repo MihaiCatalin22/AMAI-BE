@@ -23,7 +23,6 @@ public class AgendaController {
     }
 
     @GetMapping("/upcoming")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Event>> getUpcomingEvents() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> upcomingEvents = agendaService.getUpcomingEvents(now);
@@ -31,7 +30,6 @@ public class AgendaController {
     }
 
     @GetMapping("/past")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Event>> getPastEvents() {
         LocalDateTime now = LocalDateTime.now();
         List<Event> pastEvents = agendaService.getPastEvents(now);
