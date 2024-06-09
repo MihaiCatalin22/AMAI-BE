@@ -55,7 +55,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("#id == authentication.principal.id or hasAuthority('ADMIN')")
+    @PreAuthorize("#id == authentication.principal.id or hasAnyAuthority('ADMIN', 'SPEAKER')")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         try {
             eventService.deleteEvent(id);
