@@ -26,6 +26,11 @@ public class Event {
     private String topic;
     @Column(length = 500)
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "speaker_id")
+    private User speaker;
+
     @ElementCollection
     private List<String> speakers;
 

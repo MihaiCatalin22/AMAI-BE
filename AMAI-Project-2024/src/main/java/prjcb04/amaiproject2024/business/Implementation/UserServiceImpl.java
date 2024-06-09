@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(userDTO);
         String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
         user.setPasswordHash(encodedPassword);
-        if (userDTO.getEmail().contains("@abv.bg")){
+        if (userDTO.getEmail().contains("@fontys.nl")){
             String randomCode = stringGeneration();
             user.setVerificationCode(randomCode);
             emailSender.sendVerificationEmail(user, siteURL);
@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
             return false;
         } else {
             user.setVerificationCode(null);
-            user.setRoles(Collections.singletonList(Role.SPEAKER));
+            user.getRoles().add(Role.SPEAKER);
             user.setEnabled(true);
             userRepository.save(user);
             return true;

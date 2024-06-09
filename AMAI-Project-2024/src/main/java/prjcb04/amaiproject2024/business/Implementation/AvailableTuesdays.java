@@ -26,7 +26,7 @@ public class AvailableTuesdays {
     public List<LocalDate> secondEducationalPeriod() {
         List<LocalDate> allTuesdays = generate();
         LocalDate startDate = LocalDate.of(endYear, Month.FEBRUARY, 19);
-        LocalDate endDate = LocalDate.of(endYear, Month.JUNE, 29);
+        LocalDate endDate = LocalDate.of(endYear, Month.JULY, 29);
         return rangeBetween(allTuesdays, startDate, endDate);
     }
 
