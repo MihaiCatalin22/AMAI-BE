@@ -6,13 +6,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import prjcb04.amaiproject2024.business.EventService;
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.AvailableTimeslots;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/events")
@@ -64,20 +64,16 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("/search")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Event>> searchEventsByTopic(String topic) {
-        return ResponseEntity.ok(eventService.searchEventsByTopic(topic));
-    }
+
     @GetMapping("/availableSlots")
-    public ResponseEntity<List<LocalDateTime>> getAvailableSlots(
+    public ResponseEntity<List<AvailableTimeslots>> getAvailableSlots(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam int duration) {
         if (date.getDayOfWeek() != DayOfWeek.TUESDAY) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List<LocalDateTime> availableSlots = eventService.getAvailableSlots(date, duration);
+        List<AvailableTimeslots> availableSlots = eventService.getAvailableSlots(date, duration);
         return ResponseEntity.ok(availableSlots);
     }
 }

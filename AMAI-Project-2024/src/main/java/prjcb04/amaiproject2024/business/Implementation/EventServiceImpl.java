@@ -1,29 +1,65 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
-import prjcb04.amaiproject2024.domain.Event;
-import prjcb04.amaiproject2024.persistence.EventRepository;
 import prjcb04.amaiproject2024.business.EventService;
+import prjcb04.amaiproject2024.domain.AvailableTimeslots;
+import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.persistence.AvailableTimeslotsRepo;
+import prjcb04.amaiproject2024.persistence.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final AvailableTimeslotsRepo availableTimeslotsRepo;
 
     @Autowired
-    public EventServiceImpl(EventRepository eventRepository,EmailSender emailSender) {
+    public EventServiceImpl(EventRepository eventRepository, AvailableTimeslotsRepo availableTimeslotsRepo) {
         this.eventRepository = eventRepository;
+        this.availableTimeslotsRepo = availableTimeslotsRepo;
     }
 
     @Override
     public Event createEvent(Event event) {
+        LocalDate eventDate = event.getDate().toLocalDate();
+        LocalDateTime eventStartTime = event.getDate();
+        LocalDateTime eventEndTime = event.getDate().plusMinutes(event.getDuration());
+
+        List<AvailableTimeslots> slots = availableTimeslotsRepo.findByDate(eventDate);
+
+        System.out.println("Creating event from " + eventStartTime + " to " + eventEndTime);
+
+        boolean isSlotTaken = slots.stream().anyMatch(slot -> {
+            LocalDateTime slotStartTime = LocalDateTime.of(slot.getDate(), slot.getStart());
+            LocalDateTime slotEndTime = LocalDateTime.of(slot.getDate(), slot.getEnd());
+            System.out.println("Checking timeslot from " + slotStartTime + " to " + slotEndTime);
+            return !slot.getIsTaken() &&
+                    (eventStartTime.isBefore(slotEndTime) && eventEndTime.isAfter(slotStartTime));
+        });
+
+        if (isSlotTaken) {
+            throw new IllegalArgumentException("The selected timeslot is already taken.");
+        }
+
+        for (AvailableTimeslots slot : slots) {
+            LocalDateTime slotStartTime = LocalDateTime.of(slot.getDate(), slot.getStart());
+            LocalDateTime slotEndTime = LocalDateTime.of(slot.getDate(), slot.getEnd());
+
+            if ((eventStartTime.isBefore(slotEndTime) && eventEndTime.isAfter(slotStartTime)) ||
+                    (eventStartTime.isEqual(slotStartTime) && eventEndTime.isEqual(slotEndTime))) {
+                slot.setIsTaken(true);
+                availableTimeslotsRepo.save(slot);
+                System.out.println("Updated timeslot: " + slot);
+            }
+        }
+
         return eventRepository.save(event);
     }
 
@@ -67,55 +103,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<LocalDateTime> getAvailableSlots(LocalDate date, int duration) {
-        List<LocalDateTime> availableSlots = new ArrayList<>();
-        List<Event> events = getEventsByDate(date);
+    public List<AvailableTimeslots> getAvailableSlots(LocalDate date, int duration) {
+        List<AvailableTimeslots> slots = availableTimeslotsRepo.findByDate(date);
 
-        LocalDateTime slotStart = date.atTime(16, 0);
-        LocalDateTime slotEnd = date.atTime(17, 0);
-
-        LocalDateTime firstSlotStart;
-        LocalDateTime firstSlotEnd;
-        LocalDateTime secondSlotStart;
-        LocalDateTime secondSlotEnd;
-
-        // Check the selected duration and adjust time slots accordingly
-        if (duration == 10) {
-            firstSlotStart = date.atTime(16, 0);
-            firstSlotEnd = date.atTime(16, 10);
-            secondSlotStart = date.atTime(16, 10);
-            secondSlotEnd = date.atTime(16, 20);
-        } else if (duration == 20) {
-            firstSlotStart = date.atTime(16, 0);
-            firstSlotEnd = date.atTime(16, 20);
-            secondSlotStart = date.atTime(16, 20);
-            secondSlotEnd = date.atTime(16, 40);
-        } else {
-            firstSlotStart = date.atTime(16, 0);
-            firstSlotEnd = date.atTime(16, 30);
-            secondSlotStart = date.atTime(16, 30);
-            secondSlotEnd = date.atTime(17, 0);
-        }
-
-        // Check if slots are available
-        boolean firstSlotAvailable = isSlotAvailable(events, firstSlotStart, firstSlotEnd);
-        if (firstSlotAvailable) {
-            availableSlots.add(firstSlotStart);
-        }
-
-        boolean secondSlotAvailable = isSlotAvailable(events, secondSlotStart, secondSlotEnd);
-        if (secondSlotAvailable) {
-            availableSlots.add(secondSlotStart);
-        }
-        return availableSlots;
-
+        return slots.stream()
+                .filter(slot -> !slot.getIsTaken())
+                .collect(Collectors.toList());
     }
 
     private boolean isSlotAvailable(List<Event> events, LocalDateTime slotStart, LocalDateTime slotEnd) {
         return events.stream().noneMatch(event ->
                 event.getDate().isEqual(slotStart) ||
-                        (event.getDate().isAfter(slotStart) &&
-                                event.getDate().isBefore(slotEnd))
+                        (event.getDate().isAfter(slotStart) && event.getDate().isBefore(slotEnd))
         );
     }
 
@@ -135,4 +134,3 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
     }
 }
-
