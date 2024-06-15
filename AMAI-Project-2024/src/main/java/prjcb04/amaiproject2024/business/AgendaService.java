@@ -6,6 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AgendaService {
-    List<Event> getUpcomingEvents(LocalDateTime now);
-    List<Event> getPastEvents(LocalDateTime now);
+    List<Event> getUpcomingEvents(LocalDateTime now, Integer duration);
+    List<Event> getPastEvents(LocalDateTime now, Integer duration);
 }

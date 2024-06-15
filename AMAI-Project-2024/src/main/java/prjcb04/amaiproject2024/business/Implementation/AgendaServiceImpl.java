@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AgendaServiceImpl implements AgendaService {
@@ -20,18 +19,20 @@ public class AgendaServiceImpl implements AgendaService {
     }
 
     @Override
-    public List<Event> getUpcomingEvents(LocalDateTime now) {
+    public List<Event> getUpcomingEvents(LocalDateTime now, Integer duration) {
         return eventRepository.findAll().stream()
                 .filter(event -> event.getDate().isAfter(now))
+                .filter(event -> duration == null || event.getDuration() == (duration))
                 .sorted(Comparator.comparing(Event::getDate))
-                .collect(Collectors.toList());
-
+                .toList();
     }
 
     @Override
-    public List<Event> getPastEvents(LocalDateTime now) {
+    public List<Event> getPastEvents(LocalDateTime now, Integer duration) {
         return eventRepository.findAll().stream()
                 .filter(event -> event.getDate().isBefore(now))
-                .collect(Collectors.toList());
+                .filter(event -> duration == null || event.getDuration() == (duration))
+                .toList();
     }
+
 }
