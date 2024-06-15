@@ -46,4 +46,5 @@ public class SpeakerServiceImpl implements SpeakerService {
     public void deleteSpeaker(Long speakerId) {
         speakerRepository.deleteById(speakerId);
     }
+
 }

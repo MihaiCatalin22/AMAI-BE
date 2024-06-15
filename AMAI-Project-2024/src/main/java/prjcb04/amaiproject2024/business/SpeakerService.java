@@ -9,4 +9,5 @@ public interface SpeakerService {
     List<Speaker> getAllSpeakers();
     Speaker getSpeakerById(Long speakerId);
     void deleteSpeaker(Long speakerId);
+
 }

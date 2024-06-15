@@ -2,6 +2,7 @@ package prjcb04.amaiproject2024.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import prjcb04.amaiproject2024.business.SpeakerService;
 import prjcb04.amaiproject2024.domain.Speaker;
@@ -48,4 +49,5 @@ public class SpeakerController {
         speakerService.deleteSpeaker(id);
         return ResponseEntity.ok().build();
     }
+
 }

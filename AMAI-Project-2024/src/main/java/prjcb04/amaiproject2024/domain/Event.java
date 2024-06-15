@@ -27,14 +27,10 @@ public class Event {
     @Column(length = 500)
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "speaker_id")
-    private User speaker;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EventSpeaker> speakers;
 
-    @ElementCollection
-    private List<String> speakers;
-
-//    @JsonFormat(pattern = "yyyy-MM-dd")
+    //    @JsonFormat(pattern = "yyyy-MM-dd")
 //    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;

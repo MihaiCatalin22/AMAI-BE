@@ -3,6 +3,8 @@ package prjcb04.amaiproject2024.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -20,5 +22,5 @@ public class EventSpeaker {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    private String speakerName;
+    private String speakers;
 }

@@ -1,6 +1,7 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.Speaker;
 import prjcb04.amaiproject2024.persistence.EventRepository;
 import prjcb04.amaiproject2024.business.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ public class EventServiceImpl implements EventService {
     public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
     }
+
 
     @Override
     public List<Event> searchEventsByTopic(String topic) {
@@ -133,6 +135,11 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + eventId));
         event.setFileName(fileName);
         eventRepository.save(event);
+    }
+
+    @Override
+    public List<Event> searchEventsBySpeaker(String speakers) {
+        return eventRepository.findBySpeakersContainingIgnoreCase(speakers);
     }
 }
 

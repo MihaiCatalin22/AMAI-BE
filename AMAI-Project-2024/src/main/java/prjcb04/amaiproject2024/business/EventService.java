@@ -1,6 +1,7 @@
 package prjcb04.amaiproject2024.business;
 
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.Speaker;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,4 +22,6 @@ public interface EventService {
 
     void attachFileToEvent(Long eventId, String fileName);
     void updateEventPresentationFile(Long eventId, String fileName);
+
+    List<Event> searchEventsBySpeaker(String speakers);
 }
