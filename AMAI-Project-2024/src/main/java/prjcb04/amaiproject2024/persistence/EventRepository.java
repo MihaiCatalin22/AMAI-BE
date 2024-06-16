@@ -13,4 +13,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e WHERE e.date BETWEEN :startOfTimeSlot AND :endOfTimeSlot")
     List<Event> findByDateTimeSlot(LocalDateTime startOfTimeSlot, LocalDateTime endOfTimeSlot);
+
+    List<Event> findBySpeakerId(Long speakerId);
 }

@@ -13,7 +13,7 @@ public interface EventService {
     List<Event> getAllEvents();
     Event updateEvent(Long id, Event event);
     void deleteEvent(Long id);
-
+    List<Event> searchEventsBySpeakerFullName(String fullName);
     List<Event> searchEventsByTopic(String topic);
     List<Event> getEventsByDate(LocalDate date);
 
