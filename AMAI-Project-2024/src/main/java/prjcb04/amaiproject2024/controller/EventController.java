@@ -69,7 +69,7 @@ public class EventController {
     public ResponseEntity<List<Event>> searchEventsByTopic(String topic) {
         return ResponseEntity.ok(eventService.searchEventsByTopic(topic));
     }
-    @GetMapping("/search")
+    @GetMapping("/search/speaker")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Event>> searchEventsBySpeaker(@RequestParam String speakers){
         return ResponseEntity.ok(eventService.searchEventsBySpeaker(speakers));
