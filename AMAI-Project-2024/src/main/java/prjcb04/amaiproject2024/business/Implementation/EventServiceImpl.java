@@ -44,6 +44,10 @@ public class EventServiceImpl implements EventService {
             existingEvent.setDescription(eventDetails.getDescription());
             existingEvent.setDate(eventDetails.getDate());
             existingEvent.setDuration(eventDetails.getDuration());
+<<<<<<< Updated upstream
+=======
+            existingEvent.setSpeakers(eventDetails.getSpeakers());
+>>>>>>> Stashed changes
             return eventRepository.save(existingEvent);
         }).orElseThrow(() -> new IllegalArgumentException("Event not found with id: " + id));
     }
