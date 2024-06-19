@@ -15,6 +15,8 @@ public interface EventService {
     void deleteEvent(Long id);
     List<Event> searchEventsBySpeakerFullName(String fullName);
     List<Event> searchEventsByTopic(String topic);
+    List<Event> searchEventsByTopicAndSpeaker(String topic, String speakerName) ;
+
     List<Event> getEventsByDate(LocalDate date);
 
     List<LocalDateTime> getAvailableSlots(LocalDate date, int duration);
