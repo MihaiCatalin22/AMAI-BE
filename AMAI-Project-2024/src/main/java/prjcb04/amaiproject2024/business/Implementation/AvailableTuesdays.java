@@ -1,9 +1,9 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import prjcb04.amaiproject2024.domain.AvailableTimeslots;
 import prjcb04.amaiproject2024.domain.TimeSlot;
+import prjcb04.amaiproject2024.persistence.AvailableTimeslotsRepo;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -31,43 +31,30 @@ public class AvailableTuesdays {
     }
 
     public List<LocalDate> generate() {
-
-
         Set<LocalDate> holidays = new HashSet<>();
         // Add holidays to the set
         addHolidayRange(holidays, LocalDate.of(startYear, Month.OCTOBER, 16), LocalDate.of(startYear, Month.OCTOBER, 22)); // Autumn break
         addHolidayRange(holidays, LocalDate.of(endYear, Month.OCTOBER, 16), LocalDate.of(endYear, Month.OCTOBER, 22)); // Autumn break
-
         addHolidayRange(holidays, LocalDate.of(startYear, Month.DECEMBER, 25), LocalDate.of(endYear, Month.JANUARY, 7)); // Christmas break
         addHolidayRange(holidays, LocalDate.of(endYear, Month.DECEMBER, 25), LocalDate.of(endYear + 1, Month.JANUARY, 7)); // Christmas break
-
         addHolidayRange(holidays, LocalDate.of(startYear, Month.FEBRUARY, 12), LocalDate.of(startYear, Month.FEBRUARY, 18)); // Carnival break
         addHolidayRange(holidays, LocalDate.of(endYear, Month.FEBRUARY, 12), LocalDate.of(endYear, Month.FEBRUARY, 18)); // Carnival break
-
         holidays.add(LocalDate.of(startYear, Month.MARCH, 29)); // Good Friday
         holidays.add(LocalDate.of(endYear, Month.MARCH, 29)); // Good Friday
-
         holidays.add(LocalDate.of(startYear, Month.APRIL, 1)); // Easter Monday
         holidays.add(LocalDate.of(endYear, Month.APRIL, 1)); // Easter Monday
-
         addHolidayRange(holidays, LocalDate.of(startYear, Month.APRIL, 29), LocalDate.of(startYear, Month.MAY, 5)); // May break
         addHolidayRange(holidays, LocalDate.of(endYear, Month.APRIL, 29), LocalDate.of(endYear, Month.MAY, 5)); // May break
-
         addHolidayRange(holidays, LocalDate.of(startYear, Month.MAY, 9), LocalDate.of(startYear, Month.MAY, 10)); // Ascension Day and the day after
         addHolidayRange(holidays, LocalDate.of(endYear, Month.MAY, 9), LocalDate.of(endYear, Month.MAY, 10)); // Ascension Day and the day after
-
         holidays.add(LocalDate.of(startYear, Month.MAY, 20)); // Whit Monday
         holidays.add(LocalDate.of(endYear, Month.MAY, 20)); // Whit Monday
-
         addHolidayRange(holidays, LocalDate.of(startYear, Month.JULY, 26), LocalDate.of(startYear, Month.SEPTEMBER, 2)); // Summer break
         addHolidayRange(holidays, LocalDate.of(endYear, Month.JULY, 26), LocalDate.of(endYear, Month.SEPTEMBER, 2)); // Summer break
-
         // Add first week and last two weeks of educational periods to the holidays
         addFirstWeekAndLastTwoWeeks(holidays, LocalDate.of(startYear, Month.SEPTEMBER, 4), LocalDate.of(endYear, Month.FEBRUARY, 11)); // Educational period 1
         addFirstWeekAndLastTwoWeeks(holidays, LocalDate.of(endYear, Month.FEBRUARY, 19), LocalDate.of(endYear + 1, Month.JUNE, 29)); // Educational period 2
-
-        List<LocalDate> tuesdays = getFilteredTuesdays(startYear, endYear, holidays);
-        return tuesdays;
+        return getFilteredTuesdays(startYear, endYear, holidays);
     }
 
     private static void addHolidayRange(Set<LocalDate> holidays, LocalDate start, LocalDate end) {
@@ -97,11 +84,9 @@ public class AvailableTuesdays {
 
     public static List<LocalDate> getFilteredTuesdays(int startYear, int endYear, Set<LocalDate> holidays) {
         List<LocalDate> tuesdays = new ArrayList<>();
-
         for (int year = startYear; year <= endYear; year++) {
             for (Month month : Month.values()) {
                 LocalDate date = LocalDate.of(year, month, 1);
-
                 while (date.getMonth() == month) {
                     if (date.getDayOfWeek() == DayOfWeek.TUESDAY &&
                             isValidTuesday(date, holidays)) {
@@ -111,40 +96,31 @@ public class AvailableTuesdays {
                 }
             }
         }
-
         return tuesdays;
     }
 
     public static boolean isValidTuesday(LocalDate date, Set<LocalDate> holidays) {
         Month month = date.getMonth();
         int day = date.getDayOfMonth();
-
         // Exclude first week of September and February
         if ((month == Month.SEPTEMBER || month == Month.FEBRUARY) && day <= 7) {
             return false;
         }
-
         // Exclude last two weeks of June and January
         if ((month == Month.JUNE && day >= 16) || (month == Month.JANUARY && day >= 16)) {
             return false;
         }
-
         // Exclude holidays
-        if (holidays.contains(date)) {
-            return false;
-        }
-
-        return true;
+        return !holidays.contains(date);
     }
 
     public static List<AvailableTimeslots> generateTimeSlotsForTuesdays(List<LocalDate> tuesdays) {
-        List<AvailableTimeslots> tuesdayTimeSlots = new ArrayList<>() {
-        };
+        List<AvailableTimeslots> tuesdayTimeSlots = new ArrayList<>();
         for (LocalDate tuesday : tuesdays) {
             List<TimeSlot> slots = new ArrayList<>();
-            LocalTime startTime = LocalTime.of(16, 0);
+            LocalTime startTime = LocalTime.of(16, 0); // Start time set to 16:00
             LocalTime endTime = startTime.plusMinutes(10);
-            while (!endTime.isAfter(LocalTime.of(17, 0))) {
+            while (!endTime.isAfter(LocalTime.of(17, 0))) { // End time is 17:00
                 slots.add(new TimeSlot(startTime, endTime));
                 startTime = startTime.plusMinutes(10);
                 endTime = endTime.plusMinutes(10);
@@ -161,5 +137,9 @@ public class AvailableTuesdays {
         }
         return tuesdayTimeSlots;
     }
-}
 
+    public void saveGeneratedTimeSlots(List<LocalDate> tuesdays, AvailableTimeslotsRepo availableTimeslotsRepo) {
+        List<AvailableTimeslots> timeSlots = generateTimeSlotsForTuesdays(tuesdays);
+        availableTimeslotsRepo.saveAll(timeSlots);
+    }
+}

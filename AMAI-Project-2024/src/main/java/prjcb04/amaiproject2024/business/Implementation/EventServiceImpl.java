@@ -31,17 +31,24 @@ public class EventServiceImpl implements EventService {
         LocalDate eventDate = event.getDate().toLocalDate();
         LocalDateTime eventStartTime = event.getDate();
         LocalDateTime eventEndTime = event.getDate().plusMinutes(event.getDuration());
-
         List<AvailableTimeslots> slots = availableTimeslotsRepo.findByDate(eventDate);
 
-        System.out.println("Creating event from " + eventStartTime + " to " + eventEndTime);
+        for (AvailableTimeslots slot : slots) {
+            if (slot.getStart() == null || slot.getEnd() == null) {
+            } else {
+                LocalDateTime slotStartTime = LocalDateTime.of(slot.getDate(), slot.getStart());
+                LocalDateTime slotEndTime = LocalDateTime.of(slot.getDate(), slot.getEnd());
+            }
+        }
 
         boolean isSlotTaken = slots.stream().anyMatch(slot -> {
+            if (slot.getDate() == null || slot.getStart() == null || slot.getEnd() == null) {
+                return false;
+            }
             LocalDateTime slotStartTime = LocalDateTime.of(slot.getDate(), slot.getStart());
             LocalDateTime slotEndTime = LocalDateTime.of(slot.getDate(), slot.getEnd());
-            System.out.println("Checking timeslot from " + slotStartTime + " to " + slotEndTime);
-            return !slot.getIsTaken() &&
-                    (eventStartTime.isBefore(slotEndTime) && eventEndTime.isAfter(slotStartTime));
+            boolean overlap = (eventStartTime.isBefore(slotEndTime) && eventEndTime.isAfter(slotStartTime));
+            return slot.getIsTaken() && overlap;
         });
 
         if (isSlotTaken) {
@@ -49,14 +56,15 @@ public class EventServiceImpl implements EventService {
         }
 
         for (AvailableTimeslots slot : slots) {
+            if (slot.getDate() == null || slot.getStart() == null || slot.getEnd() == null) {
+                continue;
+            }
             LocalDateTime slotStartTime = LocalDateTime.of(slot.getDate(), slot.getStart());
             LocalDateTime slotEndTime = LocalDateTime.of(slot.getDate(), slot.getEnd());
-
             if ((eventStartTime.isBefore(slotEndTime) && eventEndTime.isAfter(slotStartTime)) ||
                     (eventStartTime.isEqual(slotStartTime) && eventEndTime.isEqual(slotEndTime))) {
                 slot.setIsTaken(true);
                 availableTimeslotsRepo.save(slot);
-                System.out.println("Updated timeslot: " + slot);
             }
         }
 
