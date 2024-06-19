@@ -69,6 +69,11 @@ public class EventController {
     public ResponseEntity<List<Event>> searchEventsByTopic(String topic) {
         return ResponseEntity.ok(eventService.searchEventsByTopic(topic));
     }
+    @GetMapping("/searchBySpeaker")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Event>> getEventsBySpeakerFullName(@RequestParam String fullName) {
+        return ResponseEntity.ok(eventService.searchEventsBySpeakerFullName(fullName));
+    }
     @GetMapping("/availableSlots")
     public ResponseEntity<List<LocalDateTime>> getAvailableSlots(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,

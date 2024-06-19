@@ -1,25 +1,30 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.User;
 import prjcb04.amaiproject2024.persistence.EventRepository;
 import prjcb04.amaiproject2024.business.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import prjcb04.amaiproject2024.persistence.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
 
+    private final UserRepository userRepository;
     private final EventRepository eventRepository;
 
     @Autowired
-    public EventServiceImpl(EventRepository eventRepository,EmailSender emailSender) {
+    public EventServiceImpl(EventRepository eventRepository, EmailSender emailSender, UserRepository userRepository) {
         this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -52,6 +57,15 @@ public class EventServiceImpl implements EventService {
     @Override
     public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Event> searchEventsBySpeakerFullName(String fullName) {
+        Optional<User> user = userRepository.findByFullName(fullName);
+        if (user.isPresent()) {
+            return eventRepository.findBySpeakerId(user.get().getId());
+        }
+        return Collections.emptyList();
     }
 
     @Override
