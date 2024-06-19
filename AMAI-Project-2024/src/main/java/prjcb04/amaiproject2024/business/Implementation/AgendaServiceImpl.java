@@ -2,6 +2,7 @@ package prjcb04.amaiproject2024.business.Implementation;
 
 import prjcb04.amaiproject2024.business.AgendaService;
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.User;
 import prjcb04.amaiproject2024.persistence.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,23 @@ public class AgendaServiceImpl implements AgendaService {
         return eventRepository.findAll().stream()
                 .filter(event -> event.getDate().isBefore(now))
                 .filter(event -> duration == null || event.getDuration() == (duration))
+                .toList();
+    }
+
+    @Override
+    public List<Event> getUpcomingEventsByUser(User user, LocalDateTime now) {
+        return eventRepository.findBySpeaker(user).stream()
+                .filter(event -> event.getDate().isAfter(now))
+                .filter(event -> event.getSpeaker().equals(user))
+                .sorted(Comparator.comparing(Event::getDate))
+                .toList();
+    }
+
+    @Override
+    public List<Event> getPastEventsByUser(User user, LocalDateTime now) {
+        return eventRepository.findBySpeaker(user).stream()
+                .filter(event -> event.getDate().isBefore(now))
+                .filter(event -> event.getSpeaker().equals(user))
                 .toList();
     }
 
