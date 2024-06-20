@@ -1,9 +1,9 @@
 package prjcb04.amaiproject2024.business;
 
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.AvailableTimeslots;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +19,7 @@ public interface EventService {
 
     List<Event> getEventsByDate(LocalDate date);
 
-    List<LocalDateTime> getAvailableSlots(LocalDate date, int duration);
+    List<AvailableTimeslots> getAvailableSlots(LocalDate date, int duration);
 
     void attachFileToEvent(Long eventId, String fileName);
     void updateEventPresentationFile(Long eventId, String fileName);
