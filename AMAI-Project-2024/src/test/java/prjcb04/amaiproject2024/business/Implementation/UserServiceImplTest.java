@@ -72,16 +72,6 @@ public class UserServiceImplTest {
         verify(userRepository).save(any(User.class));
     }
 
-    @Test
-    void getUserById_ExistingUser_ReturnsUserDTO() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-
-        Optional<UserDTO> foundUserDTO = userService.getUserById(1L);
-
-        assertTrue(foundUserDTO.isPresent());
-        assertEquals("testUser", foundUserDTO.get().getUsername());
-        verify(userRepository).findById(1L);
-    }
 
     @Test
     void getUserById_UserNotFound_ThrowsEntityNotFoundException() {

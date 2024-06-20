@@ -64,6 +64,20 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<Event>> searchEventsByTopic(String topic) {
+        return ResponseEntity.ok(eventService.searchEventsByTopic(topic));
+    }
+    @GetMapping("/searchBySpeaker")
+    public ResponseEntity<List<Event>> getEventsBySpeakerFullName(@RequestParam String fullName) {
+        return ResponseEntity.ok(eventService.searchEventsBySpeakerFullName(fullName));
+    }
+
+    @GetMapping("/searchByTopicAndSpeaker")
+    public ResponseEntity<List<Event>> searchEventsByTopicAndSpeaker(
+            @RequestParam String topic, @RequestParam String speakerName) {
+        return ResponseEntity.ok(eventService.searchEventsByTopicAndSpeaker(topic, speakerName));
+    }
 
     @GetMapping("/availableSlots")
     public ResponseEntity<List<AvailableTimeslots>> getAvailableSlots(

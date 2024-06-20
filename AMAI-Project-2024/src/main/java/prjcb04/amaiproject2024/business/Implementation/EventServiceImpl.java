@@ -7,9 +7,12 @@ import prjcb04.amaiproject2024.persistence.AvailableTimeslotsRepo;
 import prjcb04.amaiproject2024.persistence.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import prjcb04.amaiproject2024.persistence.UserRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class EventServiceImpl implements EventService {
 
+    private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final AvailableTimeslotsRepo availableTimeslotsRepo;
 
@@ -88,6 +92,7 @@ public class EventServiceImpl implements EventService {
             existingEvent.setDescription(eventDetails.getDescription());
             existingEvent.setDate(eventDetails.getDate());
             existingEvent.setDuration(eventDetails.getDuration());
+            existingEvent.setSpeakers(eventDetails.getSpeakers());
             return eventRepository.save(existingEvent);
         }).orElseThrow(() -> new IllegalArgumentException("Event not found with id: " + id));
     }
@@ -98,9 +103,37 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<Event> searchEventsBySpeakerFullName(String fullName) {
+//        Optional<User> user = userRepository.findByFullName(fullName);
+//        if (user.isPresent()) {
+//            return eventRepository.findBySpeakerId(user.get().getId());
+//        }
+//        return Collections.emptyList();
+
+        List<User> users = userRepository.findByPartialName(fullName);
+        if (users.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        return eventRepository.findBySpeakerIds(userIds);
+    }
+
+    @Override
     public List<Event> searchEventsByTopic(String topic) {
         return eventRepository.findByTopicContainingIgnoreCase(topic);
     }
+
+    public List<Event> searchEventsByTopicAndSpeaker(String topic, String speakerName) {
+        List<User> users = userRepository.findByPartialName(speakerName);
+        if (users.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        return eventRepository.findByTopicAndSpeakerIds(topic, userIds);
+    }
+
 
     @Override
     public List<Event> getEventsByDate(LocalDate date) {

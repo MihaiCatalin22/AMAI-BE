@@ -1,6 +1,5 @@
 package prjcb04.amaiproject2024.business.Implementation;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,11 +35,11 @@ class AgendaServiceImplTest {
 
     @Test
     void testGetUpcomingEvents_HappyCase() {
-        Event futureEvent1 = Event.builder().topic("Future Event 1").date(now.plusDays(1)).build();
-        Event futureEvent2 = Event.builder().topic("Future Event 2").date(now.plusDays(2)).build();
+        Event futureEvent1 = Event.builder().topic("Future Event 1").date(now.plusDays(1)).duration(20).build();
+        Event futureEvent2 = Event.builder().topic("Future Event 2").date(now.plusDays(2)).duration(30).build();
         when(eventRepository.findAll()).thenReturn(Arrays.asList(futureEvent1, futureEvent2));
 
-        List<Event> upcomingEvents = agendaService.getUpcomingEvents(now);
+        List<Event> upcomingEvents = agendaService.getUpcomingEvents(now, null);
 
         assertEquals(2, upcomingEvents.size());
         assertTrue(upcomingEvents.contains(futureEvent1));
@@ -51,18 +50,18 @@ class AgendaServiceImplTest {
     void testGetUpcomingEvents_NoEvents() {
         when(eventRepository.findAll()).thenReturn(Collections.emptyList());
 
-        List<Event> upcomingEvents = agendaService.getUpcomingEvents(now);
+        List<Event> upcomingEvents = agendaService.getUpcomingEvents(now, null);
 
         assertTrue(upcomingEvents.isEmpty());
     }
 
     @Test
     void testGetPastEvents_HappyCase() {
-        Event pastEvent1 = Event.builder().topic("Past Event 1").date(now.minusDays(1)).build();
-        Event pastEvent2 = Event.builder().topic("Past Event 2").date(now.minusDays(2)).build();
+        Event pastEvent1 = Event.builder().topic("Past Event 1").date(now.minusDays(1)).duration(20).build();
+        Event pastEvent2 = Event.builder().topic("Past Event 2").date(now.minusDays(2)).duration(30).build();
         when(eventRepository.findAll()).thenReturn(Arrays.asList(pastEvent1, pastEvent2));
 
-        List<Event> pastEvents = agendaService.getPastEvents(now);
+        List<Event> pastEvents = agendaService.getPastEvents(now, null);
 
         assertEquals(2, pastEvents.size());
         assertTrue(pastEvents.contains(pastEvent1));
@@ -73,28 +72,54 @@ class AgendaServiceImplTest {
     void testGetPastEvents_NoEvents() {
         when(eventRepository.findAll()).thenReturn(Collections.emptyList());
 
-        List<Event> pastEvents = agendaService.getPastEvents(now);
+        List<Event> pastEvents = agendaService.getPastEvents(now, null);
 
         assertTrue(pastEvents.isEmpty());
     }
 
     @Test
     void testGetUpcomingEvents_ExactBoundary() {
-        Event boundaryEvent = Event.builder().topic("Boundary Event").date(now).build();
+        Event boundaryEvent = Event.builder().topic("Boundary Event").date(now).duration(20).build();
         when(eventRepository.findAll()).thenReturn(Arrays.asList(boundaryEvent));
 
-        List<Event> upcomingEvents = agendaService.getUpcomingEvents(now);
+        List<Event> upcomingEvents = agendaService.getUpcomingEvents(now, null);
 
         assertFalse(upcomingEvents.contains(boundaryEvent));
     }
 
     @Test
     void testGetPastEvents_ExactBoundary() {
-        Event boundaryEvent = Event.builder().topic("Boundary Event").date(now).build();
+        Event boundaryEvent = Event.builder().topic("Boundary Event").date(now).duration(20).build();
         when(eventRepository.findAll()).thenReturn(Arrays.asList(boundaryEvent));
 
-        List<Event> pastEvents = agendaService.getPastEvents(now);
+        List<Event> pastEvents = agendaService.getPastEvents(now, null);
 
         assertFalse(pastEvents.contains(boundaryEvent));
+    }
+
+    @Test
+    void testGetUpcomingEvents_WithDuration() {
+        Event futureEvent1 = Event.builder().topic("Future Event 1").date(now.plusDays(1)).duration(20).build();
+        Event futureEvent2 = Event.builder().topic("Future Event 2").date(now.plusDays(2)).duration(30).build();
+        when(eventRepository.findAll()).thenReturn(Arrays.asList(futureEvent1, futureEvent2));
+
+        List<Event> upcomingEvents = agendaService.getUpcomingEvents(now, 20);
+
+        assertEquals(1, upcomingEvents.size());
+        assertTrue(upcomingEvents.contains(futureEvent1));
+        assertFalse(upcomingEvents.contains(futureEvent2));
+    }
+
+    @Test
+    void testGetPastEvents_WithDuration() {
+        Event pastEvent1 = Event.builder().topic("Past Event 1").date(now.minusDays(1)).duration(20).build();
+        Event pastEvent2 = Event.builder().topic("Past Event 2").date(now.minusDays(2)).duration(30).build();
+        when(eventRepository.findAll()).thenReturn(Arrays.asList(pastEvent1, pastEvent2));
+
+        List<Event> pastEvents = agendaService.getPastEvents(now, 30);
+
+        assertEquals(1, pastEvents.size());
+        assertFalse(pastEvents.contains(pastEvent1));
+        assertTrue(pastEvents.contains(pastEvent2));
     }
 }
