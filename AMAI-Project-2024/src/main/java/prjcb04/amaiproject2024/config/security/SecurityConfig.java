@@ -27,7 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("users/*/calendar/**").permitAll()
                         .requestMatchers("/files/upload/**").authenticated()
                         .requestMatchers("/agendas/**").permitAll()
-                        .requestMatchers("/events/**").authenticated()
+                        .requestMatchers("/events/**").permitAll()
                         .requestMatchers("/presentations/**").authenticated()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 )

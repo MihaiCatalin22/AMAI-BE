@@ -3,6 +3,7 @@ package prjcb04.amaiproject2024.business.Implementation;
 import prjcb04.amaiproject2024.business.EventService;
 import prjcb04.amaiproject2024.domain.AvailableTimeslots;
 import prjcb04.amaiproject2024.domain.Event;
+import prjcb04.amaiproject2024.domain.User;
 import prjcb04.amaiproject2024.persistence.AvailableTimeslotsRepo;
 import prjcb04.amaiproject2024.persistence.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,10 @@ public class EventServiceImpl implements EventService {
     private final AvailableTimeslotsRepo availableTimeslotsRepo;
 
     @Autowired
-    public EventServiceImpl(EventRepository eventRepository, AvailableTimeslotsRepo availableTimeslotsRepo) {
+    public EventServiceImpl(EventRepository eventRepository, AvailableTimeslotsRepo availableTimeslotsRepo, UserRepository userRepository1) {
         this.eventRepository = eventRepository;
         this.availableTimeslotsRepo = availableTimeslotsRepo;
+        this.userRepository = userRepository1;
     }
 
     @Override
